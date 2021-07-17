@@ -176,8 +176,7 @@ class AllInOne():
 		date =WeightTracker.objects.get(id=1)
 
 		pass
-dated = WeightTracker.objects.values_list('date_created', flat=	True)
-print(dated)
+
 
 
 user_photo = Profile.objects.values_list('user_photo')
