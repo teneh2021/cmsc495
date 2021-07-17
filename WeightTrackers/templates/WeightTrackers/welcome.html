@@ -1,0 +1,59 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.83.1">
+    <title>Welcome</title>
+ <link rel="shortcut icon" type="image/png" href='{% static "WeightTrackers/images/faavicon.ico" %}'> 
+
+<!-- Bootstrap CSS  -->
+    <link rel="stylesheet" type="text/css"  href='{% static "WeightTrackers/css/dashboard.css" %}'/>
+    <link rel="stylesheet" type="text/css"  href='{% static "WeightTrackers/css/bootstrap.min.css" %}'/>
+  
+<style>
+  main{
+    width: 600px; background-color: rgba(88, 216, 178, 0.664); height: 500px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			-moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			border-radius: 5px;
+
+  }
+</style>
+  </head>
+  <body class="text-center" style="background-color: rgba(78, 149, 177, 0.541);"> 
+    
+<main class="position-absolute top-50 start-50 translate-middle" >
+    
+<h1 style="text-align: center;">Welcome to <br> Weight Tracking App</h1>
+
+
+<br><br>
+  <div  >
+
+        <div style=" text-align: center;">
+ <ul class="nav nav-pills justify-content-center" >
+        <li class="nav-item"><a href="#" class="nav-link" aria-current="page">Home</a></li>
+        <li class="nav-item"><a href="#" class="nav-link">Dashboard</a></li>
+        <li class="nav-item"><a href="#" class="nav-link">BMI</a></li>
+        <li class="nav-item"><a href="#" class="nav-link">Target</a></li>
+         <li class="nav-item"><a href="{% url 'admin:index' %}" class="nav-link">Admin</a></li>
+      </ul>
+      <br><br>
+
+        <button type="button" class="btn btn-outline-primary e-2"><a class="btn  e-2" href="{% url 'WeightTrackers:login' %}" style="text-decoration: none;">Login</a></button>
+        <button type="button" class="btn btn-primary"><a class="btn btn-primary" href="{% url 'WeightTrackers:register' %}">Sign-up</a></button>
+      </div>
+ 
+  </div>
+  </main> 
+<p class="position-absolute bottom-0 start-50 translate-middle-x" >&copy; 2021 CMSC 495 Weight Tracking App</p>
+    <script src='{% static "WeightTrackers/js/bootstrap.bundle.min.js" %}'></script>
+
+      
+  </body>
+</html>

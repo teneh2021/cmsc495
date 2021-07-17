@@ -1,0 +1,141 @@
+{% extends 'WeightTrackers/base.html' %}
+{% load static %}   
+    
+
+ {% block content %}
+
+        {% block target %}
+          <li class="nav-item">
+            <a class="nav-link active"  href="{% url 'WeightTrackers:target' %}">
+              <span data-feather="target"></span>
+              Target Analysis
+            </a>
+          </li>
+          {% endblock target %}
+ <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+ <div class="bd-cheatsheet container-fluid bg-body">
+  <section id="content">
+   
+
+    <article class="my-3" id="progress">
+      <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
+        
+      </div>
+      <div>
+     
+        <div class="bd-example">
+         <h2>Progress Bars</h2>
+         <p>BMI Progress</p>
+        <div class="progress position-relative">
+
+          <!-- 
+          <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>-->
+          <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" id="bmi_progress" role="progressbar" style="width: {{bmi_progress}}%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="position-absolute">Start BMI: 29</div>
+          <div class="position-absolute end-0">Target BMI: 24</div>
+        </div>
+        </div>
+        <br>
+        <div class="bd-example">
+           <p>Weight Progress</p>
+        <div class="progress position-relative">
+          <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="position-absolute">Start Weight: 199</div>
+          <div class="position-absolute end-0">Target Weight: 165</div>
+        </div>
+        <br>
+        </div>
+        <div class="bd-example">
+           <p>Date Progress</p>
+          <div class="progress position-relative">
+          
+          <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="position-absolute">Start Date: 29</div>
+          <div class="position-absolute end-0">Target Date: </div>
+        </div>
+        </div>
+      </div>
+    </article>
+  <article class="my-3" id="card">
+      <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
+        <h3></h3>
+       
+      </div>
+
+    
+  <div class="container py-4"  >
+   
+<header class="p-3 mb-4 border-bottom" >
+     
+      <h2 >Current Analysis</h2>
+      </a>
+    </header>
+
+    <div class="row align-itemsp-md-stretch" >
+      <div class="col-md-6">
+          <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Current Weight</h5>
+                <p class="card-text">See how much you are doing on weight loss.</p>
+              </div>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Start weight: </div> <div class="col-6 col-md-6  " style="text-align: center;">{{request.user.first_item}}</div></div>   </li>
+                <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Current weight: </div> <div class="col-6 col-md-6  " style="text-align: center;">{{request.user.last_item}}</div></div>   </li>
+                <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Total weight loss/gain : </div> <div class="col-6 col-md-6  " style="text-align: center;">{{request.user.total_loss}}</div></div>   </li>
+                
+                </ul>
+            </div>
+            </div>
+      <div class="col-md-6">
+
+        <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Timeline</h5>
+              </div>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Start date: </div> <div class="col-6 col-md-6  " style="text-align: center;">9 June 2021</div></div>   </li>
+                <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Time elapsed: </div> <div class="col-6 col-md-6  " style="text-align: center;">25 days</div></div>   </li>
+                <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Estimated end date: </div> <div class="col-6 col-md-6  " style="text-align: center;"> 31 July 2021</div></div>   </li>
+                </ul>
+            </div>
+            </div>
+      </div>
+    </div>
+<div class=" bg-dark rounded-3 " >
+      <div class="container-fluid text-white">
+        <h1 class="display-5 fw-bold">Daily activity</h1>
+     
+
+        <ul class="list-group list-group-flush ">
+          <p class="bg-dark text-white"> {{activity}} </p>
+          <!--   
+                <li class="list-group-item bg-dark text-white"><div class="row" > <div class="col-6 col-md-4 "> Activity Intensity: </div> <div class="col-6 col-md-8  " style="text-align: left;">9 June 2021</div></div>   </li>
+                <li class="list-group-item bg-dark text-white"><div class="row"> <div class="col-6 col-md-4 "> Moderate activity: </div> <div class="col-6 col-md-8  " style="text-align: left;">25 days</div></div>   </li>
+                <li class="list-group-item bg-dark text-white"><div class="row"> <div class="col-6 col-md-4 "> Hard activity: </div> <div class="col-6 col-md-8  " style="text-align: left;"> 31 July 2021</div></div>   </li>
+               <li class="list-group-item bg-dark text-white"><div class="row"> <div class="col-6 col-md-4 "> Very hard: </div> <div class="col-6 col-md-8  " style="text-align: left;"> 31 July 2021</div></div>   </li>
+-->
+                </ul>
+
+        <button class="btn btn-primary btn-lg " type="button" id="add-activity" name="button" >Add activity</button>
+        </div>
+    </div>
+    
+  </div>
+
+    </article>
+   
+  </section>
+
+</div>
+    </main>
+ 
+  <footer class="ptd-3 mt-4 border-top" style="text-align: center;">
+      &copy; 2021 CMSC 495 Weight Tracking App
+    </footer>
+
+<script>
+
+
+</script>
+{% endblock content %}
+

@@ -1,0 +1,44 @@
+{% extends 'WeightTrackers/base.html' %}
+{% load static %}   
+    
+
+ {% block content %}
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+
+
+<div class="bd-cheatsheet container-fluid bg-body">
+
+
+  <section id="forms">
+    
+    <article class="my-3" id="validation">
+      <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
+        <h3>Edit Settings</h3>
+        
+      </div>
+
+      <div>
+        <div class="bd-example">
+        <form method="POST" class="row g-3" enctype="multipart/form-data">
+       {{ form.as_table }}
+         {% csrf_token %}
+         
+          <div class="col-12">
+        
+          <input class="btn btn-primary" type="submit" value="Submit">
+          </div>
+
+     
+        </form>
+        </div>
+      </div>
+    </article>
+  </section>
+
+</div>
+    </main>
+ 
+  <footer class="ptd-3 mt-4 border-top" style="text-align: center;">
+      &copy; 2021 CMSC 495 Weight Tracking App
+    </footer>
+{% endblock content %}

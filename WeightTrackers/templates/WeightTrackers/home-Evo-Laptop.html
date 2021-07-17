@@ -1,0 +1,337 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.83.1">
+     <title>{% block title %}Weight Tracking App {% endblock %}</title>
+     <link rel="shortcut icon" type="image/png" href='{% static "WeightTrackers/images/faavicon.ico" %}'> 
+
+<!-- Bootstrap CSS  -->
+    <link rel="stylesheet" type="text/css"  href='{% static "WeightTrackers/css/dashboard.css" %}'/>
+    <link rel="stylesheet" type="text/css"  href='{% static "WeightTrackers/css/bootstrap.min.css" %}'/>
+  <style>
+        .notLoggedIn {
+                background-color: rgba(78, 149, 177, 0.541);
+               display: flex;
+               justify-content: center;
+               align-items: center;
+                }
+        .footer1{
+            margin-top: 85%;
+        }
+        .child {
+        width: 600px;
+        height: 500px;
+        text-align: center;
+        border: 3px solid rgb(117, 226, 122);
+        background-color: rgba(88, 216, 178, 0.664); 
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        }
+    </style>
+
+
+
+  </head>
+  <body>
+  {% block content %}
+{% if user.is_authenticated %}
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Weight Tracking</a>
+  <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+ 
+  <div class="form-control bg-dark w-100" ></div>
+ <ul class="navbar-nav px-3">
+    <li class="nav-item text-nowrap">
+       <a class="nav-link" href="{% url 'WeightTrackers:logout' %}">Sign out</a>
+    </li>
+  </ul>
+</header>
+
+<div class="container-fluid">
+  <div class="row">
+    <nav id="sidebarMenu" aria-label="menu" class="col-md-3 col-lg-2 d-md-block bg-dark  sidebar collapse" >
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active"  href="#">
+               <span data-feather="home"></span>
+              Home
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link  text-white"  href="{% url 'WeightTrackers:dashboard' %}" aria-current="page">
+              <span data-feather="bar-chart-2"></span>
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+           <a class="nav-link text-white"  href="{% url 'WeightTrackers:bmi' %}">
+              <span data-feather="layers"></span>
+             BMI
+            </a>
+          </li>
+      
+          <li class="nav-item">
+            <a class="nav-link text-white"  href="{% url 'WeightTrackers:target' %}">
+              <span data-feather="target"></span>
+              Target Analysis
+            </a>
+          </li>
+           <li class="nav-item">
+          
+            
+           
+             <div class="nav-link text-white"><span data-feather="plus-circle"></span>
+             
+            <button id="signujp-btn" class="btn" type="submit" name="butston" style="color: white;">Update weight</button>
+           </div>
+            
+             
+             
+              
+               <!--   
+                             
+
+               <input type="hidden" name="start_weight" value="update()">
+              <button type="submit" name="start_weight" onclick="update()" id="s_weight" value="" style="border: 0px; background-color: rgb(34, 33, 33); color: white;">Update Weight</button>
+              -->
+            
+              
+          
+          </li>
+        </ul>
+
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+          <span>Print record</span>
+          <a class="link-secondary" href="#" aria-label="Add a new report">
+            <span data-feather="save"></span>
+          </a>
+        </h6>
+
+        <nav aria-label="Site menu" class="navbar fixed-bottom navbar-expand-sm navbar-dark bg-dark justify-content-start" style="width: 220px;">
+
+  <div class="container">
+    
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      
+      <ul class="navbar-nav">
+    
+        <li class="nav-item dropup">
+           <hr  style="margin-inline-start: 0em;  width: 240px; color: white;">
+           <a href="#" class="nav-link d-flex align-items-start text-white text-decoration-none dropdown-toggle" id="dropdown10" data-bs-toggle="dropdown" aria-expanded="false">
+        <img src='{% static "WeightTrackers/images/son.jpg" %}' alt="" width="32" height="32" class="rounded-circle me-2">
+        
+        <strong>{{ user }}</strong>
+      </a>
+          <ul class="dropdown-menu" aria-labelledby="dropdown10">
+            <li><a class="dropdown-item" href="{% url 'WeightTrackers:user_settings' %}">Settings</a></li>
+            <li><a class="dropdown-item"  href="{% url 'WeightTrackers:profile' %}">Profile</a></li>
+            
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+      </div>
+    </nav>
+ <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+ <div class="bd-cheatsheet container-fluid bg-body">
+  <section id="content">
+   
+    <article class="my-3" id="carousel">
+      <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
+        <h3></h3>
+        
+      </div>
+
+      <div>
+        <div class="bd-example">
+          <h2>The 3 Ps of Healthy Lifestyle</h2>
+        <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+          </div>
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="800" height="400" src='{% static "WeightTrackers/images/carousel1.jfif" %}' role="img" aria-label="Placeholder: First slide" preserveAspectRatio="xMidYMid slice" focusable="false" alt="carousel 1"><title>Placeholder</title><rect width="100%" height="100%" fill="#777"/><text x="50%" y="50%" fill="#555" dy=".3em">Proper exercise</text></img>
+
+              <div class="carousel-caption d-none d-md-block">
+                 <h5>Proper exercise</h5>
+                <p>Exercise daily and avoid sedentary life.</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="800" height="400" src='{% static "WeightTrackers/images/carousel2.jfif" %}' role="img" aria-label="Placeholder: Second slide" preserveAspectRatio="xMidYMid slice" focusable="false" alt="carousel 2"><title>Placeholder</title><rect width="100%" height="100%" fill="#666"/><text x="50%" y="50%" fill="#444" dy=".3em">Proper diet</text></img>
+
+              <div class="carousel-caption d-none d-md-block">
+                 <h5>Proper diet</h5>
+                <p>Practice good nutrition.</p>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="800" height="400" src='{% static "WeightTrackers/images/carousel3.jfif" %}' role="img" aria-label="Placeholder: Third slide" preserveAspectRatio="xMidYMid slice" focusable="false" alt="carousel 3"><title>Placeholder</title><rect width="100%" height="100%" fill="#555"/><text x="50%" y="50%" fill="#333" dy=".3em">Proper sleep</text></img>
+
+              <div class="carousel-caption d-none d-md-block">
+                 <h5>Proper sleep</h5>
+                <p>sleep about 7 to 8 hours at least twice a week.</p>
+              </div>
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions"  data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions"  data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+        </div>
+      </div>
+    </article>
+   
+  <article class="my-3" id="card">
+      <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
+        <h3></h3>
+       
+      </div>
+
+      <div>
+        <div class="bd-example">
+        <div class="row  row-cols-1 row-cols-md-2 g-4">
+          <div class="col">
+            <div class="card">
+              <img class="bd-placeholder-img card-img-top" width="100%" height="100%" src="https://source.unsplash.com/random/1200x800" role="img" aria-label="Placeholder: Image cap" preserveAspectRatio="xMidYMid slice" focusable="false" alt="photos"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"/><text x="50%" y="50%" fill="#dee2e6" dy=".3em"></text></img>
+
+              
+            </div>
+          </div>
+          <div class="col-md-6" >
+            <div class="card">
+              <div class="card-header">
+                Health Tips
+              </div>
+              <div class="card-bohdy"  style="height: 400px;">
+                <h5 class="card-title">Do you know that?</h5>
+                <p class="card-text">You burn more calories sleeping than you do 
+                  watching television.</p>
+                
+              </div>
+              <div class="card-footer text-muted">
+                2 days ago
+              </div>
+            </div>
+          </div>
+        <div class="col">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Summary</h5>
+                <p class="card-text">See how much you are doing on weight loss.</p>
+              </div>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Start weight: </div> <div class="col-6 col-md-6  " style="text-align: center;">215</div></div>   </li>
+                <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Current weight: </div> <div class="col-6 col-md-6  " style="text-align: center;">210 </div></div>   </li>
+                <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Current BMI: </div> <div class="col-6 col-md-6  " style="text-align: center;"> 27</div></div>   </li>
+                <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Time elapsed: </div> <div class="col-6 col-md-6  " style="text-align: center;"> 25 days</div></div>   </li>
+               <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Total weight loss/gain: </div> <div class="col-6 col-md-6  " style="text-align: center;"> 5 pounds</div></div>   </li>
+
+
+                </ul>
+          
+            </div>
+          </div>
+          <div class="col">
+            <div class="card">
+              <div class="row g-0">
+                
+                <div class="col-md-4">
+                  {% for photo in user_pict %}
+                     
+                   <img class="bd-placeholder-img" width="250" height="250" src="{{ photo.user_pict.url }}" alt="User_pict"></img>
+              
+                 {% endfor %}
+                </div>
+               
+                <div class="col-md-8">
+                  <div class="card-body">
+                    <h5 class="card-title">Your recent exercise</h5>
+                    <p class="card-text">Daily moderate exercise is a great way to keep up with good Health.</p>
+                    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+         
+      </div>
+    </article>
+   
+  </section>
+</div>
+    </main>
+  </div>
+  <footer class="ptd-3 mt-4 border-top" style="text-align: center;">
+      &copy; 2021 CMSC 495 Weight Tracking App
+    </footer>
+</div>
+
+
+{% endif %}
+{% endblock %}
+
+
+
+  
+
+
+<script src='{% static "WeightTrackers/js/feather.js" %}' ></script>
+<script >feather.replace();
+
+
+  function update(){
+         var weight = prompt("Enter weight in pounds.");
+         if (weight!=null){
+           document.getElementById('s_weight').value = weight
+           
+         }
+return weight
+       }
+</script>
+
+<script type="text/javascript">
+      $(function () {
+          // Login
+
+
+          //  Signup
+          $("#signup-btn").modalForm({
+            formURL: "{% url 'WeightTrackers:WeightUpdate' %}"
+          });
+
+      });
+  </script>
+
+<script src="{% static 'WeightTrackers/js/jquery-3.2.1.js' %}"></script>
+<script src="{% static 'WeightTrackers/js/popper.min.js' %}"></script>
+<script src="{% static 'WeightTrackers/js/jquery.bootstrap.modal.forms.js' %}"></script>
+<script src="{% static 'WeightTrackers/js/jquery.bootstrap.modal.forms.min.js' %}"></script>
+
+    <!-- Option 1: Bootstrap Bundle with Popper-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+ 
+  </body>
+</html> 

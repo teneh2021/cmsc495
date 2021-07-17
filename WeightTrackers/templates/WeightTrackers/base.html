@@ -1,0 +1,326 @@
+
+<!doctype html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.83.1">
+    {% block stylesheets %}
+      <!-- Bootstrap CSS -->
+      <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+      <!-- Font awesome CSS -->
+      <link rel="stylesheet" href="{% static 'assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+      <!-- Custom CSS -->
+         <link rel="shortcut icon" type="image/png" href='{% static "WeightTrackers/images/faavicon.ico" %}'> 
+
+<!-- Bootstrap CSS  -->
+    <link rel="stylesheet" type="text/css"  href='{% static "WeightTrackers/css/dashboard.css" %}'/>
+    <link rel="stylesheet" type="text/css"  href='{% static "WeightTrackers/css/bootstrap.min.css" %}'/>
+    <style>
+        .notLoggedIn {
+                background-color: rgba(78, 149, 177, 0.541);
+               display: flex;
+               justify-content: center;
+               align-items: center;
+                }
+      
+        .child {
+
+          
+        width: 600px; background-color: rgba(88, 216, 178, 0.664); height: 500px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 5px;
+        height: 500px;
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        }
+
+        
+.section {
+  background-color: #FFF;
+  padding: 20px;
+  width: 550px;
+  border-radius: 5px;
+  margin: 0 auto;
+  
+
+  display: grid;
+  justify-content: center;
+}
+#analogClock {
+  display: grid;
+  justify-items: center;
+  align-items: center;
+}
+
+#analogClock > * {
+  grid-area: 1 / 1;
+}
+#second {
+  	position: relative;
+	background: black;
+	border-radius: 10px;
+	transform-origin: right;
+	width: 190px;
+	height: 5px;
+  top: 143px;
+  right: 95px;
+	opacity: 0.8;
+}
+     svg{
+        color-scheme: white;
+      }
+    </style>
+
+ 
+   
+    {% endblock stylesheets %}
+
+     <title>{% block title %}Weight Tracking App {% endblock %}</title>
+  </head>
+  <body>  
+<!-- cut from here-->
+ {% block contents %}
+{% if user.is_authenticated %}
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Weight Tracking</a>
+  <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+ 
+  <div class="form-control bg-dark w-100" style="text-align: center; color: white;">Welcome 
+      {% if user.first_name %}
+        <strong>{{ user.first_name }}</strong>
+        {% else %}
+        <strong>{{ user }}</strong>
+        {% endif %}
+      </div>
+        
+ <ul class="navbar-nav px-3">
+    <li class="nav-item text-nowrap">
+       <a class="nav-link" href="{% url 'WeightTrackers:logout' %}">Sign out</a>
+    </li>
+  </ul>
+</header>
+
+<div class="container-fluid">
+  <div class="row">
+    <nav id="sidebarMenu" aria-label="menu" class="col-md-3 col-lg-2 d-md-block bg-dark  sidebar collapse" >
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          {% block home %}
+          <li class="nav-item">
+            <a class="nav-link text-white"  href="{% url 'WeightTrackers:home' %}">
+               <span data-feather="home"></span>
+              Home
+            </a>
+          </li>
+          {% endblock home %}
+          {% block dashboard %}
+          <li class="nav-item">
+            <a class="nav-link  text-white"  href="{% url 'WeightTrackers:dashboard' %}" aria-current="page">
+              <span data-feather="bar-chart-2"></span>
+              Dashboard
+            </a>
+          </li>
+          {% endblock dashboard %}
+          {% block bmi %}
+          <li class="nav-item">
+           <a class="nav-link text-white"  href="{% url 'WeightTrackers:bmi' %}">
+              <span data-feather="layers"></span>
+             BMI
+            </a>
+          </li>
+            {% endblock bmi %}
+            {% block target %}
+          <li class="nav-item">
+            <a class="nav-link text-white"  href="{% url 'WeightTrackers:target' %}">
+              <span data-feather="target"></span>
+              Target Analysis
+            </a>
+          </li>
+          {% endblock target %}
+           <li class="nav-item">
+          
+             <div class="nav-link text-white"><span data-feather="plus-circle"></span>
+          
+             <button type="button" id="create-book-sync" name="button" style="border: 0px; background-color: rgb(37, 37, 37); color: white;">Update Weight</button>
+      
+
+           </div>
+            
+          </li>
+        </ul>
+
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+          <span>Print record</span>
+          <a class="link-secondary" href="{% url 'generate_pdf' %}" aria-label="Add a new report">
+            <span data-feather="save"></span>
+          </a>
+        </h6>
+
+        <nav aria-label="Site menu" class="navbar fixed-bottom navbar-expand-sm navbar-dark bg-dark justify-content-start" style="width: 220px;">
+
+  <div class="container">
+    
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      
+      <ul class="navbar-nav">
+    
+        <li class="nav-item dropup">
+           <hr  style="margin-inline-start: 0em;  width: 240px; color: white;">
+           <a href="#" class="nav-link d-flex align-items-start text-white text-decoration-none dropdown-toggle" id="dropdown10" data-bs-toggle="dropdown" aria-expanded="false">
+        <img src='{% static "WeightTrackers/images/son.jpg" %}' alt="" width="32" height="32" class="rounded-circle me-2">
+        {% if user.first_name %}
+        <strong>{{ user.first_name }}</strong>
+        {% else %}
+        <strong>{{ user }}</strong>
+        {% endif %}
+      </a>
+          <ul class="dropdown-menu" aria-labelledby="dropdown10">
+            <li><a class="dropdown-item" href="{% url 'WeightTrackers:user_settings' %}">Settings</a></li>
+            <li><a class="dropdown-item"  href="{% url 'WeightTrackers:profile' %}">Profile</a></li>
+            
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+      </div>
+    </nav>
+
+<!--  Bootstrap modal content -->
+
+<div class="modal fade" id="create-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog mt-5">
+    <div class="modal-content">
+    </div>
+  </div>
+</div>
+<!--Bootstrap modal content-->
+<div class="modal fade" tabindex="-1" role="dialog" id="modal">
+  <div class="modal-dialog mt-5" role="document">
+    <div class="modal-content"></div>
+  </div>
+</div>
+
+{% block content %}
+{% endblock content %}
+
+</div>
+</div>
+{% else %}
+<div class="container notLoggedIn" > 
+    
+    <div class="child" >
+        <br><br><br><br>
+        <h1 >Oops! you are not logged in.</h1>
+        <p>Please click <a href="{% url 'WeightTrackers:login' %}">here</a> to login.</p>
+        <p>Please click <a href="{% url 'WeightTrackers:register' %}">here</a> to register.</p>
+    </div> 
+    	<footer > 
+			<div class="position-absolute bottom-0 start-50 translate-middle-x" >
+      &copy; 2021 CMSC 495 Weight Tracking App Hello all
+    </div>
+  </footer>
+</div>
+{% endif %}
+{% endblock contents %}
+
+
+ <!-- JavaScript -->
+<script src='{% static "WeightTrackers/js/feather.js" %}' ></script>
+<script >feather.replace();
+</script>
+
+
+
+
+      <script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
+      <script src="{% static 'assets/js/popper.min.js' %}"></script>
+      <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+      <!-- You can alternatively load the minified version -->
+      <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+ 
+
+{% block extrascripts %}
+
+  <script type="text/javascript">
+      $(function () {
+         
+  /*      
+       javascript
+*/
+          // Create book synchronous
+          function createBookSyncModalForm() {
+            $("#create-book-sync").modalForm({
+                formURL: "{% url 'WeightTrackers:book' %}",
+                modalID: "#create-modal"
+            });
+          }
+          createBookSyncModalForm();
+
+           function createBookSyncModalForm2() {
+            $("#add-activity").modalForm({
+                formURL: "{% url 'WeightTrackers:book2' %}",
+                modalID: "#create-modal"
+            });
+          }
+          createBookSyncModalForm2();
+
+        
+      });
+  </script>
+
+
+  
+{% endblock extrascripts %}
+
+  
+
+   
+
+  </body>
+
+</html> 
+
+<!-- 
+
+
+  <h1>List of Videos</h1>
+<table border="1" width="600">
+<tr>
+<td>Name</td>
+<td>Description</td>
+<td>Video File</td>
+</tr>
+
+{% for video in allvideos %}
+<tr>
+<td>{{ video.name }}</td>
+<td>
+{{ video.description }}</td>
+<td><video width='400' controls>
+<source src='{{ MEDIA_URL }}{{ video.videofile }}' type='video/mp4'>
+Your browser does not support the video tag.
+</video>
+</td>
+</tr>
+{% endfor %}
+</table>
+
+
+</body>
+<script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'}),_trfd.push({'ap':'cpsh'},{'server':'p3plcpnl0769'}) // Monitoring performance to make your website faster. If you want to opt-out, please contact web hosting support.</script><script src='https://img1.wsimg.com/tcc/tcc_l.combined.1.0.6.min.js'></script></html>
+
+-->
