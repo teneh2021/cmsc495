@@ -181,8 +181,7 @@ class AllInOne():
 
 user_photo = Profile.objects.values_list('user_photo')
 list_item = []
-for enter in Calculate.objects.all():
-	list_item.append(enter.weight)
+
 
 first_item =0
 last_item=0
