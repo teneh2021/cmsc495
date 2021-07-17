@@ -3,7 +3,10 @@
 # Setting up the environment
 # NOTE: Program only supports Python3
 
-
+Use the following command to insert latest version into requirements.txt
+```
+pip freeze > requirements2.txt
+```
 Clone the git repo main branch
 ```
 git clone https://github.com/criggins1/cmsc495.git
