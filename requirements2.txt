@@ -1,0 +1,9 @@
+asgiref==3.3.4
+Django==3.2.5
+pillow
+django-widget-tweaks
+django-bootstrap-modal-forms
+WeasyPrint
+django-chartjs
+gunicorn
+psycopg2
