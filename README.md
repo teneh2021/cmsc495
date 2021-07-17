@@ -1,4 +1,3 @@
-# cmsc495
 # Weight tracking application projectfiles
 
 # Setting up the environment
