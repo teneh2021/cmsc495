@@ -347,13 +347,10 @@ from chartjs.views.lines import BaseLineChartView
 class LineChartJSONView(BaseLineChartView):
 	weighted =[]
 	dated =[]
-	for entry in Calculate.objects.all():
-		dated.append(entry.entry_date)
-		weighted.append(entry.weight)
 
 	def get_labels(self):
 		"""Return 7 labels for the x-axis."""
-		return [self.dated]
+		return ['Sunday', 'Monday', 'Tuesday', 'Wed', 'Thur', 'Fri', 'Sat',]
 
 
 	def get_providers(self):
