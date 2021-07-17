@@ -6,4 +6,4 @@ django-bootstrap-modal-forms
 WeasyPrint
 django-chartjs
 gunicorn
-psycopg2
+psycopg2-binary
