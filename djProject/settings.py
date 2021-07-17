@@ -28,9 +28,8 @@ MEDIA_URL = '/media/'
 SECRET_KEY = 'django-insecure-p_v*^%ingrpz=wj3b5rri$-$fhkwfyg6taq+wkbi%jlg=q-)29'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['192.241.151.211']
 
 
 # Application definition
@@ -85,16 +84,19 @@ WSGI_APPLICATION = 'djProject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-"""   
-DATABASES = {
+
+if DEBUG:
+    ALLOWED_HOSTS = []
+    DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-"""
+       }
+     }
 
-DATABASES = {
+else:
+    ALLOWED_HOSTS = ['192.241.151.211']
+    DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'wta',
@@ -103,7 +105,7 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '',
     }
-}
+    }
 
 
 # Password validation
