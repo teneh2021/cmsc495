@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 from .models import Activities,  Weight, Profile, AddWeight, WeightTracker
-from bootstrap_modal_forms.forms import BSModalForm
+
 
 
 # Create your forms here.
@@ -23,11 +23,10 @@ class WeightUpdateForm(BSModalModelForm):
 		model = AddWeight
 		fields = ['add_weight']
 
-class CreateUserForm(UserCreationForm):
+class UserForm(UserCreationForm):
 	class Meta:
-		model = WeightTracker
-		fields = ['user', 'password1', 'password2',]
-
+		model = User
+		fields = ['username', 'password1', 'password2']
 
 
 class ProfileForm(forms.ModelForm):

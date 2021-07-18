@@ -92,8 +92,7 @@
               </div>
               <div class="card-bohdy"  style="height: 400px;">
                 <h5 class="card-title">Do you know that?</h5>
-                <p class="card-text">You burn more calories sleeping than you do 
-                  watching television.</p>
+                <p class="card-text">{{health_tip}}</p>
                 
               </div>
               <div class="card-footer text-muted">
@@ -112,7 +111,7 @@
                 <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Start weight: </div> <div class="col-6 col-md-6  " style="text-align: center;">{{ first_item }}</div></div>   </li>
                 <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Current weight: </div> <div class="col-6 col-md-6  " style="text-align: center;">{{last_item}} </div></div>   </li>
                 <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Current BMI: </div> <div class="col-6 col-md-6  " style="text-align: center;"> {{bmi}}</div></div>   </li>
-                <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Time elapsed: </div> <div class="col-6 col-md-6  " style="text-align: center;"> 25 days</div></div>   </li>
+                <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Time elapsed: </div> <div class="col-6 col-md-6  " style="text-align: center;"> {{time_elapse}}</div></div>   </li>
                <li class="list-group-item"><div class="row"> <div class="col-6 col-md-6 "> Total weight loss/gain: </div> <div class="col-6 col-md-6  " style="text-align: center;"> {{total_loss}}</div></div>   </li>
                   
 
@@ -126,21 +125,19 @@
                 
                 <div class="col-md-4">
 
-                  {% for photo in user_pict %}
-
-                      <img src='{{photo.user_photo.jpg.url}}' alt="" width="150" height="150" class="rounded-dcircle me-2">
+                      <img src='{{user_photo.jpg.url}}' alt="" width="150" height="150" class="rounded-dcircle me-2">
 
                     <!-- {% static "WeightTrackers/images/son.jpg" %}
                    <img class="bd-placeholder-img" width="250" height="250" src="{{ photo.user_pict.url }}" alt="User_pict"></img>
                --> 
-                 {% endfor %}
+               
                 </div>
                
                 <div class="col-md-8">
                   <div class="card-body">
                     <h5 class="card-title">Your recent exercise</h5>
-                    <p class="card-text">Daily moderate exercise is a great way to keep up with good Health.</p>
-                    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                    <p class="card-text"> {{add_activity}}</p>
+                    <p class="card-text"><small class="text-muted">Daily moderate exercise is a great way to keep up with good Health.o</small></p>
                   </div>
                 </div>
               </div>

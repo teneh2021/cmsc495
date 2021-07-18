@@ -28,11 +28,11 @@ ACTIVITY_LEVEL = (
 class WeightTracker(models.Model):
     
     #username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='WeightTracker', null=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)  
+    user = models.OneToOneField(User, null=True, related_name='weighttracker', on_delete=models.CASCADE) 
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.username)
+        return str(self.user)
 
 
 class Profile(models.Model):
@@ -66,7 +66,7 @@ class Weight(models.Model):
     target_weight = models.FloatField(max_length=20, default=0,  verbose_name='Enter your target weight') 
     finish_date = models.DateField(null=True)
     def __str__(self):
-        return str(self.target_weight)
+        return str(self.topic)
 
 
 
@@ -79,7 +79,7 @@ class Activities(models.Model):
         help_text=message)
 
     def __str__(self):
-        return str(self.activity_level)
+        return str(self.topic)
 
 
 class Calculate(models.Model):
