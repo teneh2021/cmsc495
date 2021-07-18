@@ -180,6 +180,25 @@ class AllInOne():
 			dated = ent.date_created
 		time_elaps= timezone.now() - dated
 		return time_elaps.days
+	
+	def date_slide(self):
+		for entry in WeightTracker.objects.all():
+			dated = entry.date_created
+		for entry in Weight.objects.all():
+			target_date = entry.finish_date
+		
+		if target_date is None:
+			date_diff=0
+		else:
+			date_diff = target_date - dated.date()
+		
+		if date_diff !=0:
+			date_quotient = 100/date_diff.days
+		else:
+			date_quotient =0
+		
+		date_slide = date_quotient * (timezone.now() - dated).days
+		return date_slide
 
 	def health_tip(self):
 		line = 0
@@ -423,7 +442,10 @@ def target(request):
 		target_date2 ="Not set yet"
 		finish_wt =0
 	weight_diff = first_wt - finish_wt
-	wt_quotient= 100/weight_diff
+	if weight_diff !=0:
+		wt_quotient= 100/weight_diff
+	else:
+		wt_quotient=0
 	current_wt_diff= first_wt -last_wt
 	slide_value = current_wt_diff * wt_quotient
 	""" target date section"""
@@ -444,16 +466,20 @@ def target(request):
 		initial_bmi = 0
 
 	bmi_diff = abs(initial_bmi - target_bmi)
-	bmi_quotient = 100/bmi_diff
+	if bmi_diff !=0:
+		bmi_quotient = 100/bmi_diff
+	else:
+		bmi_quotient=0
 
 	bmi_progress =bmi_quotient * abs(target_bmi - bmi_calc() )
-	print(bmi_progress)
+	
 
 	activity =None
 	for entry in Activities.objects.all():
 		activity = entry.add_activity
 	my_dict = {'first_item': first_wt, 'last_item': last_wt, 'slide_value': slide_value, 'initial_bmi': initial_bmi,
-	'time_elapse': all_func.time_elapsed(), 'target_date': target_date2, 'start_date': dated.date, 'target_bmi': target_bmi,
+	'time_elapse': all_func.time_elapsed(), 'target_date': target_date2, 'date_slide': all_func.date_slide(),
+	 'start_date': dated.date, 'target_bmi': round(target_bmi, 2),
 	 'total_loss': all_func.total_loss_gain(), 'activity': activity, 'finish_wt': finish_wt, 'bmi_progress': bmi_progress}
 	return render(request, 'WeightTrackers/target.html', context=my_dict)
 
