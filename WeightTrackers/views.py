@@ -1,5 +1,6 @@
 
 
+from django.forms.utils import to_current_timezone
 from .forms import *
 import math
 from django.db.models import F
@@ -24,8 +25,10 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
-
-import tempfile
+from django.views.generic import TemplateView
+from chartjs.views.lines import BaseLineChartView
+from random import randint
+from django.utils import timezone
 
 
 
@@ -150,47 +153,46 @@ def weight_diff():
 
 class AllInOne():
 
-	def user_photo():
-		for entry in Profile.objects.all():
-			user_photo = entry.user_photo
+	def user_photo(self):
+		entry = Profile.objects.values_list('user_photo')
+		if len(entry) !=0:
+			user_photo = entry[0]
+		else:
+			user_photo ="No user photo"
 		return user_photo
 
-	def total_loss_gain():
-		ist_item = []
-		for enter in AddWeight.objects.all():
-			list_item.append(enter.add_weight)
+	def total_loss_gain(self):
+		list_item = AddWeight.objects.values_list('add_weight', flat=True)
+		listed = list(list_item)
 
-		first_item = 0
-		last_item = 0
 		total_loss = 0
 		#entry = AddWeight.objects.values_list('add_weight', flat=True)
-		if len(list_item) != 0:
-			first_item = list_item[0]
-			last_item = list_item[-1]
+		if len(listed) != 0:
+			first_item = listed[0]
+			last_item = listed[-1]
 			total_loss = abs(first_item - last_item)
 		else:
 			total_loss =0
 		return total_loss
 	
-	def time_elapsed():
-		date =WeightTracker.objects.get(id=1)
+	def time_elapsed(self):
+		for ent in WeightTracker.objects.all():
+			dated = ent.date_created
+		time_elaps= timezone.now() - dated
+		return time_elaps.days
 
-		pass
-
-
-
-user_photo = Profile.objects.values_list('user_photo')
-list_item = []
-
-
-first_item =0
-last_item=0
-total_loss =0
-#entry = AddWeight.objects.values_list('add_weight', flat=True)
-if len(list_item)!=0:
-	first_item = list_item[0]
-	last_item = list_item[-1]
-	total_loss = abs(first_item - last_item)
+	def health_tip(self):
+		line = 0
+		linee = []
+		fs = FileSystemStorage('.')
+		fact_file = fs.open('health_facts.txt', 'r')
+		for lines in fact_file:
+			lengh = lines.split('\n')
+			linee.append(lengh)
+			line += 1
+		randa = randint(0, line)
+		return linee[randa][0]
+		
 
 class WeightCreateView(BSModalCreateView):
 	template_name = 'WeightTrackers/book.html'
@@ -217,13 +219,26 @@ class AddActivityView(BSModalCreateView):
 		return redirect('target')
 
 
-
 @login_required
 def user_home(request):
+	all_func = AllInOne()
+	weights =AddWeight.objects.values_list('add_weight', flat=True)
+	weight_list= list(weights)
+	if len(weight_list) !=0:
+		first_wt = weight_list[0]
+		last_wt = weight_list[-1]
+	else:
+		first_wt = "Weight not added yet"
+		last_wt = "Weight not added yet"
+	activity= Activities.objects.values_list('add_activity', flat=True)
+	activity_list= list(activity)
+	if len(activity_list) !=0:
+		activated = activity_list[-1]
+	else:
+		activated = "No activities added"
 
-
-	context={'user_pict': user_photo,  'first_item': first_item, 'last_item': last_item, 'bmi': bmi_calc(), 'total_loss': total_loss }
-	list_item =[]
+	context={'user_pict': all_func.user_photo(), 'time_elapse': all_func.time_elapsed(), 'add_activity': activated, 'health_tip':all_func.health_tip(),
+	 'first_item': first_wt, 'last_item': last_wt, 'bmi': bmi_calc(), 'total_loss': all_func.total_loss_gain() }
 		
 	return render(request, 'WeightTrackers/home.html', context)
 
@@ -267,14 +282,17 @@ def user_register(request):
 			
 				form.save(commit=True)
 				
-				user = form.cleaned_data.get('username')
 				
+				user = form.cleaned_data.get('username')
+				username=User.objects.get(username=user)
+				weighttracker = WeightTracker.objects.create(user=username)
 				messages.success(request, 'Account was created for ' + user)
-
+				
 				return redirect('/login')		
 	
 		context = {'form':form}
 		return render(request, 'WeightTrackers/register.html', context)
+
 
 	
 def editProfile(request):
@@ -340,8 +358,6 @@ def user_settings(request):
 
 
 
-from django.views.generic import TemplateView
-from chartjs.views.lines import BaseLineChartView
 
 
 class LineChartJSONView(BaseLineChartView):
@@ -369,6 +385,8 @@ class LineChartJSONView(BaseLineChartView):
 
 line_chart = TemplateView.as_view(template_name='dashboard.html')
 line_chart_json = LineChartJSONView.as_view()
+
+
 def dashboard(request):
 
 	calculations =[]
@@ -385,13 +403,58 @@ def welcome(request):
 
 
 def target(request):
-	target_bmi = 29
-	bmi_progress =20 * abs(target_bmi -bmi_calc() )
+	all_func=AllInOne()
+	weights = AddWeight.objects.values_list('add_weight', flat=True)
+	weight_list = list(weights)
+	if len(weight_list) != 0:
+		first_wt = weight_list[0]
+		last_wt = weight_list[-1]
+	else:
+		first_wt = 0
+		last_wt = 0
+
+	target_date1 = Weight.objects.values_list('finish_date', flat=True)
+	target_date = list(target_date1)
+	if len(target_date) !=0:
+		target_date2 = target_date[-1]
+		for entry in Weight.objects.all():
+			finish_wt=entry.target_weight
+	else:
+		target_date2 ="Not set yet"
+		finish_wt =0
+	weight_diff = first_wt - finish_wt
+	wt_quotient= 100/weight_diff
+	current_wt_diff= first_wt -last_wt
+	slide_value = current_wt_diff * wt_quotient
+	""" target date section"""
+	for ent in WeightTracker.objects.all():
+		dated = ent.date_created
+
+	""" Bmi section"""
+	heihgt_list = Profile.objects.values_list('height', flat=True)
+	if len(heihgt_list) !=0:
+		height = list(heihgt_list)[-1]
+	else:
+		height =1
+	target_bmi = finish_wt * 0.454 / (height * height * 0.0254 * 0.0254)
+	initial_bmi_list = Calculate.objects.values_list('bmi', flat=True)
+	if len(initial_bmi_list) !=0:
+		initial_bmi = initial_bmi_list[0]
+	else:
+		initial_bmi = 0
+
+	bmi_diff = abs(initial_bmi - target_bmi)
+	bmi_quotient = 100/bmi_diff
+
+	bmi_progress =bmi_quotient * abs(target_bmi - bmi_calc() )
+	print(bmi_progress)
 
 	activity =None
 	for entry in Activities.objects.all():
 		activity = entry.add_activity
-	my_dict = {'first_item': first_item, 'last_item': last_item, 'total_loss': total_loss, 'activity': activity, 'bmi_progress': bmi_progress}
+	my_dict = {'first_item': first_wt, 'last_item': last_wt, 'slide_value': slide_value, 'initial_bmi': initial_bmi,
+	'time_elapse': all_func.time_elapsed(), 'target_date': target_date2, 'start_date': dated.date, 'target_bmi': target_bmi,
+	 'total_loss': all_func.total_loss_gain(), 'activity': activity, 'finish_wt': finish_wt, 'bmi_progress': bmi_progress}
 	return render(request, 'WeightTrackers/target.html', context=my_dict)
 
 
