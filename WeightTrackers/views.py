@@ -2,7 +2,8 @@
 
 from django.forms.utils import to_current_timezone
 from .forms import *
-import math
+import os
+from pathlib import Path
 from django.db.models import F
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -150,17 +151,13 @@ def weight_diff():
 
 	return abs(weight_diff)
 """"**************************************************************Global variables here *********************************************************"""
-import os
-from pathlib import Path
+
 class AllInOne():
 
-	def user_photo(self):
-		entry = Profile.objects.values_list('user_photo')
-		if len(entry) !=0:
-			user_photo = entry[0]
-		else:
-			user_photo ="No user photo"
-		return user_photo
+	def user_photo(self):	
+		for photo in Profile.objects.all():
+			 pict = photo.user_photo
+		return pict
 
 	def total_loss_gain(self):
 		list_item = AddWeight.objects.values_list('add_weight', flat=True)
@@ -220,9 +217,10 @@ class AllInOne():
 		
 		randa = randint(0, len(fact_file)-1)
 		return fact_file[randa].strip()
-		
+				
 all_all = AllInOne()
-print(all_all.health_tip())
+print(all_all.user_photo())
+
 class WeightCreateView(BSModalCreateView):
 	template_name = 'WeightTrackers/book.html'
 	form_class = WeightUpdateForm
