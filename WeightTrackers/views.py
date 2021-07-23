@@ -150,7 +150,8 @@ def weight_diff():
 
 	return abs(weight_diff)
 """"**************************************************************Global variables here *********************************************************"""
-
+import os
+from pathlib import Path
 class AllInOne():
 
 	def user_photo(self):
@@ -204,17 +205,24 @@ class AllInOne():
 		line = 0
 		linee = []
 		fs = FileSystemStorage('.')
+		filename= os.path.join(Path(__file__).resolve().parent.parent, 'health_facts.txt')
+		with open(filename, encoding='utf8') as obj_file:
+			fact_file = obj_file.readlines()
+		
+		"""
 		fact_file = fs.open('health_facts.txt', 'r')
-		"""for lines in fact_file:
+		lines = list(fact_file)
+		for lines in fact_file:
 			lengh = lines.split('\n')
 			linee.append(lengh)
 			line += 1
 		"""
 		
 		randa = randint(0, len(fact_file)-1)
-		return fact_file[randa]
+		return fact_file[randa].strip()
 		
-
+all_all = AllInOne()
+print(all_all.health_tip())
 class WeightCreateView(BSModalCreateView):
 	template_name = 'WeightTrackers/book.html'
 	form_class = WeightUpdateForm
