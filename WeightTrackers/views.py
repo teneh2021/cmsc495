@@ -205,12 +205,14 @@ class AllInOne():
 		linee = []
 		fs = FileSystemStorage('.')
 		fact_file = fs.open('health_facts.txt', 'r')
-		for lines in fact_file:
+		"""for lines in fact_file:
 			lengh = lines.split('\n')
 			linee.append(lengh)
 			line += 1
-		randa = randint(0, line)
-		return linee[randa][0]
+		"""
+		
+		randa = randint(0, len(fact_file)-1)
+		return fact_file[randa]
 		
 
 class WeightCreateView(BSModalCreateView):
