@@ -46,7 +46,7 @@
           </thead>
           <tbody>
             
-            {% for calculate in request.user.calculates.all  %}
+            {% for calculate in calc|slice:':5'  %}
             <tr>
               <td>{{ calculate.entry_date }}</td>
             

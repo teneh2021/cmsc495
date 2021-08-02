@@ -122,18 +122,20 @@
           <div class="col">
             <div class="card">
               <div class="row g-0">
-                
+                <!-- if else needed for page to load if no user photo is appended-->
+                 {% if user_pict %}
                 <div class="col-md-4">
-
+                 
 
                       <img src="{{user_pict.url }}" alt="User photo" width="150" height="150" class="rounded-dcircle me-2">
-
+                  {% else %}
+                  <p>No user photo uploaded</p>
                     <!-- {% static "WeightTrackers/images/son.jpg" %}
                    <img class="bd-placeholder-img" width="250" height="250" src="{{ photo.user_pict.url }}" alt="User_pict"></img>
                --> 
                
                 </div>
-               
+               {% endif %}
                 <div class="col-md-8">
                   <div class="card-body">
                     <h5 class="card-title">Your recent exercise</h5>

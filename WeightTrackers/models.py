@@ -1,11 +1,12 @@
 
+from datetime import datetime
 from django.db.models import ExpressionWrapper, DecimalField
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import F
 from django.db.models.expressions import OrderBy
 
-# Create your models here.
+# Create your models here. #11Election2021
 GENDER = (
 	('Male', 'Male'),
 	('Female', 'Female'),)
@@ -28,8 +29,8 @@ ACTIVITY_LEVEL = (
 class WeightTracker(models.Model):
     
     #username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='WeightTracker', null=True)
-    user = models.OneToOneField(User, null=True, related_name='weighttracker', on_delete=models.CASCADE) 
-    date_created = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, null=True, related_name='weighttracker', on_delete=models.CASCADE) 
+    date_created = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return str(self.user)
@@ -45,7 +46,7 @@ class Profile(models.Model):
         verbose_name='Gender')
  
     height = models.FloatField(max_length=20, default=0, verbose_name='Enter your height')
-    user_photo = models.ImageField(upload_to='WeightTrackers/media/',  blank=True)
+    user_photo = models.ImageField(upload_to='WeightTrackers/media/',  blank=True, null=True)
 
     def __str__(self):
         return str(self.user)

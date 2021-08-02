@@ -1,37 +1,30 @@
 
 
+
 from django.forms.utils import to_current_timezone
 from .forms import *
 import os
 from pathlib import Path
-from django.db.models import F
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404, resolve_url
 from bootstrap_modal_forms.generic import (BSModalCreateView)
 from django.urls import reverse_lazy, reverse
-from django.views import generic
 from django.http import HttpResponse, HttpResponseRedirect, request, response
-from django.urls import reverse
-from django.contrib.auth.models import User as user
+#from django.urls import reverse
+from django.contrib.auth.models import User
 from .models import Profile, Calculate, AddWeight, Activities, WeightTracker
-from django.views.generic import  ListView
-import random
-# Create your views here.
-from django.db.models import Window, F
-from django.db.models.functions import Lead
-
 from django.core.files.storage import FileSystemStorage
-from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.views.generic import TemplateView
 from chartjs.views.lines import BaseLineChartView
 from random import randint
 from django.utils import timezone
+import datetime
 
-
+# Create your views here.
 
 
 """ 
@@ -45,7 +38,7 @@ with tempfile.NamedTemporaryFile(delete=False) as output:
 
 def generate_pdf(request):
 	if request.user.is_authenticated:
-		people = Calculate.objects.all().order_by('entry_date')
+		people = Calculate.objects.all().filter(topic=request.user)
 		html_string = render_to_string('WeightTrackers/generate_pdf.html', {'people': people})
 
 		html = HTML(string=html_string)
@@ -63,11 +56,11 @@ def test(request):
 
 	return render(request, 'WeightTrackers/generate_pdf.html', {'people': people})
 
-def calc():
+def calc(user):
 	calorie =0
 	weight =0
 	height=0
-	for entry in Profile.objects.all():
+	for entry in Profile.objects.filter(user=user):
 		if entry.age is None:
 			age=0
 			height=0
@@ -76,7 +69,7 @@ def calc():
 			height = entry.height
 
 
-	for entry in AddWeight.objects.all():
+	for entry in AddWeight.objects.filter(topic=user):
 		if entry.add_weight is None:
 			weight = 0
 		else:
@@ -84,54 +77,54 @@ def calc():
 			
 
 		
-	if Profile.objects.filter(user_gender='Female'):
+	if Profile.objects.filter(user=user, user_gender='Female'):
 		bmr_female = 655 +(9.6 * weight * 0.454) + (1.8 * height * 2.54) - (4.7 * age) 
 			
-		if Activities.objects.order_by('-activity_level').filter(activity_level='Sedentary'):
+		if Activities.objects.order_by('-activity_level').filter(topic=user, activity_level='Sedentary'):
 			calorie = bmr_female * 1.2
 
-		elif Activities.objects.order_by('-activity_level').filter(activity_level='Lightly active'):
+		elif Activities.objects.order_by('-activity_level').filter(topic=user, activity_level='Lightly active'):
 			calorie = bmr_female * 1.375
 
-		elif Activities.objects.order_by('-activity_level').filter(activity_level='Moderately active'):
+		elif Activities.objects.order_by('-activity_level').filter(topic=user, activity_level='Moderately active'):
 			calorie = bmr_female * 1.55
 
-		elif Activities.objects.order_by('-activity_level').filter(activity_level='Very active'):
+		elif Activities.objects.order_by('-activity_level').filter(topic=user, activity_level='Very active'):
 			calorie = bmr_female * 1.725
 
-		elif Activities.objects.order_by('-activity_level').filter(activity_level='Extra active'):
+		elif Activities.objects.order_by('-activity_level').filter(topic=user, activity_level='Extra active'):
 			calorie = bmr_female * 1.9
 		
 		return round(calorie, 2)
 
-	elif Profile.objects.filter(user_gender='Male'):
+	elif Profile.objects.filter(user=user, user_gender='Male'):
 		bmr_male = 66 + (13.7 * weight * 0.454 ) + (5 * height * 2.54) - (6.8 * age)
-		if Activities.objects.order_by('-activity_level').filter(activity_level='Sedentary'):
+		if Activities.objects.order_by('-activity_level').filter(topic=user, activity_level='Sedentary'):
 			calorie = bmr_male * 1.2
 			
-		elif Activities.objects.order_by('-activity_level').filter(activity_level='Lightly active'):
+		elif Activities.objects.order_by('-activity_level').filter(topic=user, activity_level='Lightly active'):
 			calorie = bmr_male * 1.375
 
-		elif Activities.objects.order_by('-activity_level').filter(activity_level='Moderately active'):
+		elif Activities.objects.order_by('-activity_level').filter(topic=user, activity_level='Moderately active'):
 			calorie = bmr_male * 1.55
 
-		elif Activities.objects.order_by('-activity_level').filter(activity_level='Very active'):
+		elif Activities.objects.order_by('-activity_level').filter(topic=user, activity_level='Very active'):
 			calorie = bmr_male * 1.725
 
-		elif Activities.objects.order_by('-activity_level').filter(activity_level='Extra active'):
+		elif Activities.objects.order_by('-activity_level').filter(topic=user, activity_level='Extra active'):
 			calorie = bmr_male * 1.9
 		return round(calorie, 2)
 	else:
 		return round(calorie,2)
 
 
-def bmi_calc():
+def bmi_calc(user):
 	height=0
 	weight =0
-	for entry in AddWeight.objects.all():
+	for entry in AddWeight.objects.filter(topic=user):
 		weight =  entry.add_weight
 		
-	for entry in Profile.objects.all():
+	for entry in Profile.objects.filter(user=user):
 		height = entry.height
 	if  height != 0:
 		bmi = weight * 0.454 /(height * height * 0.0254 * 0.0254)
@@ -139,10 +132,11 @@ def bmi_calc():
 		bmi =0
 	return round(bmi, 2)
 
-def weight_diff():
+
+def weight_diff(user):
 	weight_list =[]
 	
-	for entry in AddWeight.objects.all():
+	for entry in AddWeight.objects.filter(topic=user):
 		weight_list.append(entry.add_weight)
 	if len(weight_list)>=2:
 		weight_diff=weight_list[-1] - weight_list[-2]
@@ -153,14 +147,16 @@ def weight_diff():
 """"**************************************************************Global variables here *********************************************************"""
 
 class AllInOne():
-
-	def user_photo(self):	
-		for photo in Profile.objects.all():
+	def __init__(self) -> None:
+		pass
+	def user_photo(self, user):
+		pict =''
+		for photo in Profile.objects.filter(user=user):
 			 pict = photo.user_photo
 		return pict
 
-	def total_loss_gain(self):
-		list_item = AddWeight.objects.values_list('add_weight', flat=True)
+	def total_loss_gain(self, user):
+		list_item = AddWeight.objects.filter(topic=user).values_list('add_weight', flat=True)
 		listed = list(list_item)
 
 		total_loss = 0
@@ -173,29 +169,40 @@ class AllInOne():
 			total_loss =0
 		return total_loss
 	
-	def time_elapsed(self):
-		for ent in WeightTracker.objects.all():
-			dated = ent.date_created
-		time_elaps= timezone.now() - dated
+	def time_elapsed(self, user):
+		now_aware =timezone.now
+		dated1 =datetime.datetime(2021, 7, 22)
+		datenow = datetime.datetime.now()
+		
+		for ent in User.objects.filter(username=user):
+			dated = ent.date_joined
+		""" Can not subtract offset naive (datetime.datetime) and offset aware (timezone)
+		convert both values to date()
+		"""
+		time_elaps = datenow.date() - (dated.date() + datetime.timedelta(hours=-5))
 		return time_elaps.days
 	
-	def date_slide(self):
-		for entry in WeightTracker.objects.all():
-			dated = entry.date_created
-		for entry in Weight.objects.all():
+	def date_slide(self, user):
+		#target_date = datetime.datetime(2021, 8, 22)
+		#dated1 = datetime.datetime(2021, 8, 1)
+		target_date =""
+		
+		for entry in User.objects.filter(username=user):
+			dated1 = entry.date_joined
+		
+		for entry in Weight.objects.filter(topic =user):
 			target_date = entry.finish_date
 		
-		if target_date is None:
-			date_diff=0
+		if target_date:
+			date_diff = target_date - dated1.date()
 		else:
-			date_diff = target_date - dated.date()
-		
+			date_diff=0
 		if date_diff !=0:
 			date_quotient = 100/date_diff.days
 		else:
 			date_quotient =0
 		
-		date_slide = date_quotient * (timezone.now() - dated).days
+		date_slide = date_quotient * (datetime.datetime.now().date() - dated1.date()).days
 		return date_slide
 
 	def health_tip(self):
@@ -219,17 +226,22 @@ class AllInOne():
 		return fact_file[randa].strip()
 				
 all_all = AllInOne()
-print(all_all.user_photo())
 
 class WeightCreateView(BSModalCreateView):
 	template_name = 'WeightTrackers/book.html'
 	form_class = WeightUpdateForm
 
 	def form_valid(self, form):
-		add_calorie =AddWeight.objects.get_or_create(add_weight=form.cleaned_data['add_weight'],  topic=self.request.user)
-		add_calorise = Calculate.objects.get_or_create(
-			weight=form.cleaned_data['add_weight'], bmi=bmi_calc(), calorie=calc(), weight_difference=weight_diff(), topic=self.request.user)
-		
+		if not self.request.is_ajax():
+			obj=form.save(commit=False)
+			obj.topic=self.request.user
+			obj.save()
+			add_calorise = Calculate.objects.get_or_create(	weight=form.cleaned_data['add_weight'], 
+                                 bmi=bmi_calc(self.request.user), 	calorie=calc(self.request.user),
+						weight_difference=weight_diff(self.request.user), topic=self.request.user)
+			
+			
+		print(bmi_calc(self.request.user))
 		return redirect('dashboard')
 
 
@@ -239,17 +251,18 @@ class AddActivityView(BSModalCreateView):
 	form_class = AddActivity
 
 	def form_valid(self, form):
-		activity = form.cleaned_data.get('add_activity')
-		level = form.cleaned_data.get('activity_level')
-		activities=Activities.objects.get_or_create(topic=self.request.user, add_activity=activity, activity_level=level)
-		
+		if not self.request.is_ajax():
+			obj =form.save(commit=False)
+			obj.topic =self.request.user
+			obj.save()
 		return redirect('target')
 
 
 @login_required
 def user_home(request):
 	all_func = AllInOne()
-	weights =AddWeight.objects.values_list('add_weight', flat=True)
+	
+	weights =AddWeight.objects.filter(topic=request.user).values_list('add_weight', flat=True)
 	weight_list= list(weights)
 	if len(weight_list) !=0:
 		first_wt = weight_list[0]
@@ -257,16 +270,16 @@ def user_home(request):
 	else:
 		first_wt = "Weight not added yet"
 		last_wt = "Weight not added yet"
-	activity= Activities.objects.values_list('add_activity', flat=True)
+	activity= Activities.objects.filter(topic=request.user).values_list('add_activity', flat=True)
 	activity_list= list(activity)
 	if len(activity_list) !=0:
 		activated = activity_list[-1]
 	else:
 		activated = "No activities added"
 
-	context={'user_pict': all_func.user_photo(), 'time_elapse': all_func.time_elapsed(), 'add_activity': activated, 'health_tip':all_func.health_tip(),
-	 'first_item': first_wt, 'last_item': last_wt, 'bmi': bmi_calc(), 'total_loss': all_func.total_loss_gain() }
-		
+	context={'user_pict': all_func.user_photo(request.user), 'time_elapse': all_func.time_elapsed(request.user), 'add_activity': activated, 'health_tip':all_func.health_tip(),
+	 'first_item': first_wt, 'last_item': last_wt, 'bmi': bmi_calc(request.user), 'total_loss': all_func.total_loss_gain(request.user) }
+	""" does not return this template if user photo is attached. use if else tag in html to evade it"""
 	return render(request, 'WeightTrackers/home.html', context)
 
 
@@ -283,7 +296,7 @@ def user_login(request):
 		user = authenticate(request, username=USER, password = PASSWORD)
 		if user is not None:
 			login(request, user)
-			
+			user_home(request)
 			return render(request=request, template_name='WeightTrackers/home.html')
 		else:
 			messages.info(request, 'Username OR Password is incorrect')
@@ -309,10 +322,8 @@ def user_register(request):
 			
 				form.save(commit=True)
 				
-				
 				user = form.cleaned_data.get('username')
-				username=User.objects.get(username=user)
-				weighttracker = WeightTracker.objects.create(user=username)
+				
 				messages.success(request, 'Account was created for ' + user)
 				
 				return redirect('/login')		
@@ -321,15 +332,16 @@ def user_register(request):
 		return render(request, 'WeightTrackers/register.html', context)
 
 
+
 	
 def editProfile(request):
 	
 	if request.method == 'POST':
-		form = ProfileForm(request.POST, request.FILES, instance=request.user)
+		form = ProfileForm(request.POST, request.FILES)
 
 		if form.is_valid():
 
-		
+			"""  
 			age = form.cleaned_data.get('age')
 			user_gender = form.cleaned_data.get('user_gender')
 			height = form.cleaned_data.get('height')
@@ -337,11 +349,19 @@ def editProfile(request):
 			first_name = form.cleaned_data.get('first_name')
 			last_name = form.cleaned_data.get('last_name')
 			user = request.user
+
 			q = Profile.objects.all()
 			q.delete()
 			profile_setting = Profile.objects.update_or_create(user=user, first_name=first_name, last_name=last_name,
                                                       age=age, user_gender=user_gender, height=height, user_photo=user_photo)
-			form.save()	
+		"""
+			if not request.is_ajax():
+				pass
+			obj=form.save(commit=False)										  
+			obj.user=request.user
+			obj.save()
+			#form.save(commit=True)
+			print('Form is valid')
 			return redirect('/home')
 		else:
 			return HttpResponse("Entry not valid")
@@ -349,8 +369,8 @@ def editProfile(request):
 		
 		form = ProfileForm(instance=request.user)
 		
-		args = {'form': form}
-		return render(request, 'WeightTrackers/profile.html', args)
+	args = {'form': form}
+	return render(request, 'WeightTrackers/profile.html', args)
 
 
 def user_settings(request):
@@ -363,10 +383,9 @@ def user_settings(request):
 		
 
 		if form.is_valid():
-			q = Weight.objects.all()
-			q.delete()
+		
 			weight_setting = form.save(commit=False)
-			#weight_setting.topic = request.user
+			weight_setting.topic = request.user
 			weight_setting.save()
 			request.user.weights.add(weight_setting)
 
@@ -388,40 +407,48 @@ def user_settings(request):
 
 
 class LineChartJSONView(BaseLineChartView):
-	weighted =[]
-	dated =[]
-
 	def get_labels(self):
-		"""Return 7 labels for the x-axis."""
-		return ['Sunday', 'Monday', 'Tuesday', 'Wed', 'Thur', 'Fri', 'Sat',]
+		"""Starting empty lists empty the previous items being held by the list"""
+		self.dated =[]
+		dates=Calculate.objects.filter(topic=self.request.user).order_by('weight')[:10]
+		for entry in dates:
+			self.dated.append(entry.entry_date)
+		return self.dated
+		#return ['Sunday', 'Monday', 'Tuesday', 'Wed', 'Thur', 'Fri', 'Sat',]
 
 
 	def get_providers(self):
 
 		"""Return names of datasets."""
-		return ["Central", "Eastside", "Westside"]
+		return ["Weight", "Body Mass Index", "Calorie"]
 
 	def get_data(self):
-		"""Return 3 datasets to plot."""
-
-		return [[75, 44, 92, 11, 44, 95, 35],
-				[self.weighted],]
+		"""The first time it did not work, becos of [[bmi]] wherein bmi is already a list
+		this works [bmi]
+		"""
+		bmi =[]
+		calorie=[]
+		weight =[]
+		data =Calculate.objects.filter(topic=self.request.user).order_by('-weight')[:10]
+		for en in data:
+			bmi.append(en.bmi)
+			calorie.append(en.calorie)
+			weight.append(en.weight)
+		return [weight,]
+				#[75, 44, 92, 11, 44, 95, 35],
+				#[self.weighted],]
 				#[87, 21, 94, 3, 90, 13, 65]]
 				
-
-
 line_chart = TemplateView.as_view(template_name='dashboard.html')
 line_chart_json = LineChartJSONView.as_view()
 
 
 def dashboard(request):
-
-	calculations =[]
-	for entry in Calculate.objects.all():
-		calculations.append(entry)
-	my_dict = {'calc': calculations[-5:]}
-	calculations =0
+	"""Not sure why negative ordering gives the first entry and positive ordering gives the last entries"""
+	entry = Calculate.objects.filter(topic = request.user).order_by('weight')
+	my_dict = {'calc': entry}
 	return render(request, 'WeightTrackers/dashboard.html', context=my_dict)
+
 
 
 def welcome(request):
@@ -431,7 +458,7 @@ def welcome(request):
 
 def target(request):
 	all_func=AllInOne()
-	weights = AddWeight.objects.values_list('add_weight', flat=True)
+	weights = AddWeight.objects.filter(topic=request.user).values_list('add_weight', flat=True)
 	weight_list = list(weights)
 	if len(weight_list) != 0:
 		first_wt = weight_list[0]
@@ -440,7 +467,7 @@ def target(request):
 		first_wt = 0
 		last_wt = 0
 
-	target_date1 = Weight.objects.values_list('finish_date', flat=True)
+	target_date1 = Weight.objects.filter(topic=request.user).values_list('finish_date', flat=True)
 	target_date = list(target_date1)
 	if len(target_date) !=0:
 		target_date2 = target_date[-1]
@@ -456,18 +483,25 @@ def target(request):
 		wt_quotient=0
 	current_wt_diff= first_wt -last_wt
 	slide_value = current_wt_diff * wt_quotient
+	
+	
 	""" target date section"""
-	for ent in WeightTracker.objects.all():
-		dated = ent.date_created
-
+	for enter in User.objects.filter(username=request.user):
+		dated2 = enter.date_joined + datetime.timedelta(hours=-5)
+	
+	#print(dd.timedelta(hours=-5))
 	""" Bmi section"""
-	heihgt_list = Profile.objects.values_list('height', flat=True)
+	heihgt_list = Profile.objects.filter(user=request.user).values_list('height', flat=True)
 	if len(heihgt_list) !=0:
 		height = list(heihgt_list)[-1]
 	else:
 		height =1
-	target_bmi = finish_wt * 0.454 / (height * height * 0.0254 * 0.0254)
-	initial_bmi_list = Calculate.objects.values_list('bmi', flat=True)
+	if height ==0:
+		target_bmi = 0
+	else:
+		target_bmi = finish_wt * 0.454 / (height * height * 0.0254 * 0.0254)
+
+	initial_bmi_list = Calculate.objects.filter(topic=request.user).values_list('bmi', flat=True)
 	if len(initial_bmi_list) !=0:
 		initial_bmi = initial_bmi_list[0]
 	else:
@@ -478,17 +512,19 @@ def target(request):
 		bmi_quotient = 100/bmi_diff
 	else:
 		bmi_quotient=0
-
-	bmi_progress =bmi_quotient * abs(target_bmi - bmi_calc() )
+	if len(initial_bmi_list)==0:
+		bmi_progress =0
+	else:
+		bmi_progress =bmi_quotient * abs(target_bmi - bmi_calc(request.user) )
 	
-
+	
 	activity =None
-	for entry in Activities.objects.all():
+	for entry in Activities.objects.filter(topic=request.user):
 		activity = entry.add_activity
 	my_dict = {'first_item': first_wt, 'last_item': last_wt, 'slide_value': slide_value, 'initial_bmi': initial_bmi,
-	'time_elapse': all_func.time_elapsed(), 'target_date': target_date2, 'date_slide': all_func.date_slide(),
-	 'start_date': dated.date, 'target_bmi': round(target_bmi, 2),
-	 'total_loss': all_func.total_loss_gain(), 'activity': activity, 'finish_wt': finish_wt, 'bmi_progress': bmi_progress}
+	'time_elapse': all_func.time_elapsed(request.user) ,'target_date': target_date2, 'date_slide': all_func.date_slide(request.user),
+	 'start_date': dated2.date, 'target_bmi': round(target_bmi, 2),
+	 'total_loss': all_func.total_loss_gain(request.user), 'activity': activity, 'finish_wt': finish_wt, 'bmi_progress': bmi_progress}
 	return render(request, 'WeightTrackers/target.html', context=my_dict)
 
 
@@ -497,12 +533,12 @@ def bmi(request):
 	
 	weight_list =0
 	bmi_list=0
-	bmi_value = Calculate.objects.values_list('bmi', flat=True)
-	for entry in Calculate.objects.all():
+	bmi_value = Calculate.objects.filter(topic=request.user).values_list('bmi', flat=True)
+	for entry in Calculate.objects.filter(topic=request.user):
 		bmi_list =entry.bmi
-		
 	
-	for entry in AddWeight.objects.all():
+	
+	for entry in AddWeight.objects.filter(topic=request.user):
 		weight_list = entry.add_weight
 	#weight_list=Weight.objects.latest('add_weight')
 	statuses =['Underweight', 'Normal weight', 'Overweight', 'Obese']
