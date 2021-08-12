@@ -29,7 +29,7 @@ MEDIA_URL = '/media/'
 SECRET_KEY = 'django-insecure-p_v*^%ingrpz=wj3b5rri$-$fhkwfyg6taq+wkbi%jlg=q-)29'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG =False
+DEBUG =True
 
 
 
@@ -86,15 +86,16 @@ WSGI_APPLICATION = 'djProject.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 
-if DEBUG:
-    ALLOWED_HOSTS = []
-    DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-       }
-     }
 
+ALLOWED_HOSTS = ['localhost', 'amara.vangarmoh.com', 'www.amara.vangarmoh.com']
+DATABASES = {
+'default': {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': BASE_DIR / 'db.sqlite3',
+    }
+    }
+
+"""
 else:
     ALLOWED_HOSTS = ['192.241.151.211']
     DATABASES = {
@@ -107,7 +108,7 @@ else:
         'PORT': '',
     }
     }
-
+"""
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -158,4 +159,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
 LOGIN_URL='/register'
 LOGIN_REDIRECT_URL='/login'
-LOGOUT_REDIRECT_URL = '/welcome'
+LOGOUT_REDIRECT_URL = '/login'
